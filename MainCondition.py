@@ -48,15 +48,26 @@ if __name__ == '__main__':
         data_path=args.test_file_path
     )
 
-    # 自动获取数据维度并更新 args
-    # 必须在定义文件保存路径前完成，因为路径名可能依赖这些参数
-    args.feature_columns_length = len(datasets.feature_columns)
-    args.settings_length = len(datasets.setting_columns)
+    # 1. 获取训练数据张量
+    train_data_flag = datasets.get_train_data()
+    train_tensor = datasets.get_feature_slice(train_data_flag)
+    train_label_tensor = datasets.get_label_slice(train_data_flag)
     
-    args.input_size = args.feature_columns_length  # 模型输入维度
-    args.output_size = args.settings_length        # 模型输出/条件维度
+    # 获取测试数据 (针对特定 ID)
+    test_df = datasets.get_test_data(test_id=args.id_num)
+    test_label_tensor = datasets.get_test_label_slice(test_df)
+    
+    print(f'Train Tensor Shape: {train_tensor.shape}')      # 预期 (N, 30, 17)
+    print(f'Train Label Shape: {train_label_tensor.shape}') # 预期 (N, 30, 7)
+    
+    # 2. 从真实的 Tensor Shape 中读取维度，更新 args
+    args.feature_columns_length = train_tensor.shape[-1] # 这里会自动变成 17
+    args.settings_length = train_label_tensor.shape[-1]  # 这里会自动变成 7
+    
+    args.input_size = args.feature_columns_length  # 模型输入维度 (17)
+    args.output_size = args.settings_length        # 模型输出/条件维度 (7)
 
-    print(f"Data Loaded. Input Features: {args.input_size}, Output Labels: {args.output_size}")
+    print(f"Data Dimensions Confirmed. Input Features: {args.input_size}, Output Labels: {args.output_size}")
 
     # -------------------------------------------------------------------------
     # 3. 定义保存路径 (依赖上述维度参数)
@@ -91,31 +102,7 @@ if __name__ == '__main__':
         tags=['EXP-optimize'],
         config=args
     )
-
-    # -------------------------------------------------------------------------
-    # 4. 数据切片与张量转换
-    # -------------------------------------------------------------------------
-    
-    # 1. 先获取训练数据的标志 (这里返回的是 "TRAIN_SET_FLAG")
-    train_data_flag = datasets.get_train_data()
-
-    # 2. 将标志传给切片函数，这样它才知道要返回 self.train_features
-    train_tensor = datasets.get_feature_slice(train_data_flag)
-    train_label_tensor = datasets.get_label_slice(train_data_flag)
-    
-    print(f'Train Tensor Shape: {train_tensor.shape}')      # (N, seq_len, features)
-    print(f'Train Label Shape: {train_label_tensor.shape}') # (N, labels)
-
-    # 获取测试数据 (针对特定 ID)
-    test_df = datasets.get_test_data(test_id=args.id_num)
-    
-    # 获取测试标签切片
-    # 注意：这里使用 get_test_label_slice 或 get_label_slice 均可，视需求而定
-    # get_label_slice 更加通用
-    test_label_tensor = datasets.get_test_label_slice(test_df)
-    
-    print(f"Test Label Tensor Shape: {test_label_tensor.shape}")
-    
+   
     # -------------------------------------------------------------------------
     # 5. 模型训练与采样流程
     # -------------------------------------------------------------------------

@@ -218,9 +218,18 @@ def sample(args, train_label=None):
     # ----------------------
     # 形状: (Batch, 16, 30) -> 需要 reshape 统计量为 (1, 16, 1)
     if hasattr(args, 'std_normal') and hasattr(args, 'mean_normal'):
+        # args.std_normal 只有 16 个物理特征的统计量
         std_feat = args.std_normal.reshape(1, -1, 1)
         mean_feat = args.mean_normal.reshape(1, -1, 1)
-        denorm_data = sample_data * std_feat + mean_feat
+        
+        # [剥离生成的时间戳，只还原物理特征]
+        physical_data = sample_data[:, :-1, :]  # 取前 16 个通道 (B, 16, L)
+        time_data = sample_data[:, -1:, :]      # 取最后一个时间通道 (B, 1, L)
+        
+        denorm_physical = physical_data * std_feat + mean_feat
+        
+        # 重新拼接回去以保持 17 维结构
+        denorm_data = np.concatenate([denorm_physical, time_data], axis=1)
     else:
         # 兼容旧的 MinMaxScaler (如果还没改)
         max_val = args.max_normal.reshape(1, -1, 1)
