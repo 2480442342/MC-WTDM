@@ -23,10 +23,9 @@ if __name__ == '__main__':
     # -------------------------------------------------------------------------
     if len(sys.argv) == 1:
         print('------- No Prompt, Using Default Arguments --------')
-        args.epoch = 200
+        args.epoch = 50
         args.dataset = 'WT' # 仅作为标识，实际数据由 test_file_path 决定
         args.lr = 2e-3
-        args.T = 600
         args.sample_type = 'ddpm' # ddim, ddpm
         args.state = 'train' # train, sample
         
@@ -72,8 +71,8 @@ if __name__ == '__main__':
         
     args.model_path = os.path.join(
         weights_dir, 
-        # f"{current_date}_{args.dataset}_seq{args.window_size}_feat{args.feature_columns_length}.pth"
-        r'2025-12-13-11_WT_seq30_feat16.pth'
+        f"{current_date}_{args.dataset}_seq{args.window_size}_feat{args.feature_columns_length}.pth"
+        # r'2025-12-13-11_WT_seq30_feat16.pth'
     )
 
     # 定义生成数据保存路径

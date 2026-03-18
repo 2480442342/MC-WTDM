@@ -1,2 +1,19 @@
-/data
-/Parameters/__pycache__
+# 排除大型数据文件
+data/
+*.csv
+*.npy
+*.pth
+*.pt
+
+# 排除模型权重（非常重要，通常只传代码不传权重）
+weights/
+
+# 排除训练日志和 WandB 缓存
+wandb/
+logs/
+__pycache__/
+.DS_Store
+
+# 排除虚拟环境
+venv/
+.venv/

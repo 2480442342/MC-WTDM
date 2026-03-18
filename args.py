@@ -75,7 +75,7 @@ arg_parser.add_argument('--dataset', default='WT', type=str, help='数据集名�
 arg_parser.add_argument('--state', default='train', choices=['train', 'sample'], type=str, help='运行状态，默认train')  # 添加help说明
 
 arg_parser.add_argument('--T', default=500, type=int, help='时间步长，默认500')  # 添加help说明
-arg_parser.add_argument('--w', default=0.1, type=float, help='权重参数，默认0.2')  # 添加help说明
+arg_parser.add_argument('--w', default=1.5, type=float, help='权重参数，默认0.2')  # 添加help说明
 
 arg_parser.add_argument('--device', default=torch.device('cuda' if torch.cuda.is_available() else 'cpu'), type=str, help='运行设备，默认自动选择GPU或CPU')  # 修改默认值说明
 arg_parser.add_argument('--model_path', default='./weights/temp.pth', type=str, help='模型保存路径，默认./weights/temp.pth')  # 添加help说明
