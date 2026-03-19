@@ -4,6 +4,8 @@ data/
 *.npy
 *.pth
 *.pt
+*.png
+*.tif
 
 # 排除模型权重（非常重要，通常只传代码不传权重）
 weights/
